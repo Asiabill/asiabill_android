@@ -30,6 +30,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import com.asiabill.testapp.common.environment.PaymentEnvironment;
 import com.asiabill.testapp.manager.PayTask;
 
 import com.asiabill.testapp.model.BaseResponse;
@@ -48,7 +49,8 @@ import com.asiabill.testapp.one.databinding.ActivityMainBinding;
 import com.asiabill.testapp.one.model.PayResult;
 
 import com.module.common.base.BaseActivity;
-import com.module.common.network.AsiaBillRetrofitClient;
+import com.module.common.utils.AsiaBillRetrofitClient;
+
 
 import org.json.JSONArray;
 
@@ -210,31 +212,22 @@ public class MainActivity extends BaseActivity {
                 }
             }
         });
-
-        layoutBinding.placeHolderBtn.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("ShowToast")
-            @Override
-            public void onClick(View view) {
-                String mainEnvironment = layoutBinding.mainEnvironmentEt.getText().toString().trim();
-                if (TextUtils.isEmpty(mainEnvironment)) {
-                    mainEnvironment = "0";
-                }
-                if (mainEnvironment.equals("2")) {
-                    layoutBinding.mainEnvironmentLayout.setHint(R.string.checkout_item_environmentproduct);
-                    paymentsEnvironment = 2;
-                } else {
-                    layoutBinding.mainEnvironmentLayout.setHint(R.string.checkout_item_environmenttest);
-                    paymentsEnvironment = 0;
-                }
-                layoutBinding.placeHolderLayout.setVisibility(View.GONE);
-            }
-        });
     }
 
 
     /**
      * 商户构建ASIABILL SDK基础数据
      */
+
+
+    //商户号
+    public static String merNo = "12200";
+
+    //网关接入号
+    public static String gatewayNo = "12200001";
+
+    //签名密钥
+    public static String signKey = "12345678";
 
     //商户订单号
     public static String ORDERNO = String.valueOf(System.currentTimeMillis());
@@ -244,9 +237,6 @@ public class MainActivity extends BaseActivity {
 
     //客户ID
     public static String CUSTOMERID = "";
-
-    //0 测试环境 1 fz环境 2 线上生产环境（默认）
-    public static int paymentsEnvironment = 0;
 
     //交易币种
     private String ORDER_CURRENCY = "USD";
@@ -301,6 +291,12 @@ public class MainActivity extends BaseActivity {
         ORDERNO = String.valueOf(System.currentTimeMillis());
         ORDER_AMOUNT = "100";
         PayInfoBean payInfoBean = new PayInfoBean.Builder()
+                //设置商户号
+                .setMerNo(merNo)
+                //设置网关接入号
+                .setGatewayNo(gatewayNo)
+                //设置签名密钥
+                .setSignkey(signKey)
                 //设置用户firstName
                 .setFirstName("CL")
                 //设置用户lastName
@@ -329,8 +325,6 @@ public class MainActivity extends BaseActivity {
                 .setPaymentMethod(paymentMethod)
                 //设置用户身份证号
                 //payInfoBean.setCreNum(creNum);
-                //0 测试环境 1 fz环境 2 线上生产环境（默认）
-                .setPaymentsEnvironment(paymentsEnvironment)
                 .build();
         Runnable payRunable = new Runnable() {
             @Override
@@ -376,6 +370,12 @@ public class MainActivity extends BaseActivity {
          */
 
         PayInfoBean payInfoBean = new PayInfoBean.Builder(SESSION_TOKEN)
+                //设置商户号
+                .setMerNo(merNo)
+                //设置网关接入号
+                .setGatewayNo(gatewayNo)
+                //设置签名密钥
+                .setSignkey(signKey)
                 //设置商品详情，可不传
                 .setGoodsDetail(list)
                 //设置支付界面头部和请求框资源文件，可不传
@@ -415,8 +415,6 @@ public class MainActivity extends BaseActivity {
                 .setViewManagerType(viewManagerType)
                 //设置用户的customerId
                 .setCustomerID(CUSTOMERID)
-                //0 测试环境 1 fz环境 2 线上生产环境（默认）
-                .setPaymentsEnvironment(paymentsEnvironment)
                 //商户后台异步通知交易结果使用该URL通知
                 .setCallbackUrl(callbackUrl)
                 .build();
@@ -439,10 +437,10 @@ public class MainActivity extends BaseActivity {
      * version asiabill_2.1
      * 商户自定义ui需要走3D支付方法
      */
-    private void payThreeD() {
+    private void payThreeD(PayInfoBean payInfoBean) {
         String threeDUrl = "https://192.168.3.126:8080/services/v3/threeDsCheck?threeDsParam=1f77fa7fd70c308fe66bc406cfd1df0d69b974e1fe6304c480b436182ec803fb3b0f29f6b4dfe17f8bd4aafff52308f3a87c7cd3b7b74e06b3ee709ad2794a70aaa317fa9a753a635fcc5b9427db00cc5e7f1b632acd8931a7cf3317fecb9dabb0a200a7cd6ae8c6cb3deee49b8bf0390b2b671e158cf961f5a85cdf1c9a7ecaa4292678f3a13968f1067bc3fb3dc4c13187097f836b5cd175ad14adc264b9cda391097953c667f9080eaa7a256734c0a39e2e222961c2cab8675a2ecc6f7dc081106286ac2117643bc67d744f7bf31e38c95759307a41a0296fa3b425f4144147df63cb6fda9c656507245466c83d20cc683adbc1ec9d8aaffe9c0eeaabd64d5a25d877eb8e36ed31ddab8710a45e1fe46e03b0dad78eee792ab1e83ea2d92d96f8b5501ff46d7c53d0ce7f5adee9e34ddc79faf87cf3d7fdfb9dba00d8a13c2669301e7dc82a8fe0a1fc3847c95698a604dcab22d59c83d6042c982f15199f96c82dc235c6968e9596e680efd6b51b030a359cbc459310fd71136dcd2f49cda391097953c667f9080eaa7a256734c085039570073f081ce1648496e6cf28b88d12abbf79652611a03549ee34bfd36990f0b896dd5e85673132ea2e84d2bbca74f4db45c7f62f740d9a002f1b206dca&threeDsType=9";
         if (!TextUtils.isEmpty(threeDUrl)) {
-            payThreeDCheck(threeDUrl);
+            payThreeDCheck(threeDUrl,payInfoBean);
         }
     }
 
@@ -452,19 +450,19 @@ public class MainActivity extends BaseActivity {
      *
      * @param url 3D验证url地址
      */
-    private void payThreeDCheck(String url) {
-        Runnable payRunable = new Runnable() {
+    private void payThreeDCheck(String url,PayInfoBean payInfoBean) {
+        Runnable payRunnable = new Runnable() {
             @Override
             public void run() {
                 PayTask payTask = new PayTask(MainActivity.this);
-                String result = payTask.payThreeDCheck(url);
+                String result = payTask.payThreeDCheck(url,payInfoBean);
 
                 Message msg = new Message();
                 msg.obj = result;
                 mHandle.sendMessage(msg);
             }
         };
-        Thread payThread = new Thread(payRunable);
+        Thread payThread = new Thread(payRunnable);
         payThread.start();
     }
 
@@ -481,9 +479,9 @@ public class MainActivity extends BaseActivity {
      * 获取订单交易令牌sessionToken
      */
     public void getSessionToken() {
-        SessionTokenRequest mSessionTokenRequest = PayTask.getSessionToken(MainActivity.this, paymentsEnvironment);
+        SessionTokenRequest mSessionTokenRequest = PayTask.getSessionTokenRequest(merNo,gatewayNo,signKey);
         String BaseUrl = BASE_TPO_URL;
-        if(paymentsEnvironment == 0){
+        if(PayTask.getPaymentEnvironment()== PaymentEnvironment.TEST){
             BaseUrl = BASE_TPO_URL_TEST;
         }
         AsiaBillRetrofitClient.getInstance(BaseUrl, 10).create(PaymentApiService.class).gainSessionToken(mSessionTokenRequest, CRAET_SESSION_TOKEN)
@@ -529,7 +527,7 @@ public class MainActivity extends BaseActivity {
         //  phone	String	50	No	【电话】
         mCreateCustomerRequest.setPhone("18126541234");
         String BaseUrl = BASE_TPO_URL;
-        if(paymentsEnvironment == 0){
+        if(PayTask.getPaymentEnvironment()== PaymentEnvironment.TEST){
             BaseUrl = BASE_TPO_URL_TEST;
         }
         AsiaBillRetrofitClient.getInstance(BaseUrl, 10).create(PaymentApiService.class).createCustomer(mCreateCustomerRequest, CRAET_CUSTOMERS, token)

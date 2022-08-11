@@ -5,6 +5,7 @@ package com.asiabill.testapp.one;
 
 import android.app.Application;
 
+import com.asiabill.testapp.common.environment.PaymentEnvironment;
 import com.module.common.utils.AsiaBillMobileSdk;
 
 
@@ -22,6 +23,6 @@ public class AsiabillApplication extends Application {
     public void onCreate() {
         super.onCreate();
         sInstance = this;
-        AsiaBillMobileSdk.init(this);
+        AsiaBillMobileSdk.init(this, PaymentEnvironment.PRODUCT);
     }
 }
