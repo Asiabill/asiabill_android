@@ -28,7 +28,7 @@
  
  ```
  dependencies {
-    implementation "com.asiabill.payment:android_payment:2.1.0"//具体版本号根据你的需求来确定
+    implementation "com.asiabill.payment:android_payment:2.1.1"//具体版本号根据你的需求来确定
  }
  ```
  
@@ -149,7 +149,7 @@ public class AsiabillApplication extends Application {
  
  ```
  dependencies {
-    implementation "com.asiabill.payment:android_payment:2.1.0"//The specific version number will be determined according to your needs
+    implementation "com.asiabill.payment:android_payment:2.1.1"//The specific version number will be determined according to your needs
  }
  ```
  
