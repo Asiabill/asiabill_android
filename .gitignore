@@ -9,6 +9,7 @@ local.properties
 # Android Studio
 *.iml
 .idea/
+misc.xml
 .DS_Store
 
 # Log files
