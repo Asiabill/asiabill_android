@@ -28,7 +28,7 @@
  
  ```
  dependencies {
-    implementation "com.asiabill.payment:android_payment:2.1.1"//具体版本号根据你的需求来确定
+    implementation "com.asiabill.payment:android_payment:2.1.2"//具体版本号根据你的需求来确定
  }
  ```
  
@@ -114,7 +114,47 @@ public class AsiabillApplication extends Application {
 - 支付过程中，返回结果中redirectUrl不为空，则需要进行3DS验证，将解析后的redirectUrl返回给SDK端，SDK端跳转用户到3DS页面进行验证，
 3DS验证完成后，AsiaBill将跳转到商户的returnUrl地址（请参阅 <a href="https://asiabill.gitbook.io/api-explorer/webhook/zhi-fu-jie-guo-tiao-zhuan" target="_blank">支付结果跳转</a> ），商户端验证签名并解析数据后，将解析结果（成功、失败）返回给SDK端，SDK端跳转用户到交易结果展示页面。
 
-> **<h3>6. webhook 通知处理<h3>**
+> **<h3>6. Google Pay 集成说明<h3>**
+
+   **<h4>(1) 前置条件<h4>**
+   
+   - 确保设备已安装 Google Play Services
+   - 设备上已登录 Google 账号且已绑定支付卡
+   - 应用使用正式签名证书打包（生产环境）
+
+   **<h4>(2) 配置 Google Pay 商户信息<h4>**
+   
+   在调用支付时，需要配置以下 Google Pay 相关参数：
+
+   ```java
+   PayInfoBean payInfoBean = new PayInfoBean.Builder()
+       // ... 其他参数 ...
+       // 设置支付方式为Google Pay（0：Google Pay，1：其他）
+       .setTokenPayType("0")
+       // 【生产环境必传】Google Pay商户ID
+       // 获取方式：在 https://pay.google.com/business/console 注册并完成审核后获取
+       .setGooglepayMerchId("BCR2DN4TXXXXXXXX")
+       // 【建议设置】Google Pay付款页面显示的商户名称
+       .setGooglepayMerchName("Your Brand Name")
+       .build();
+   ```
+
+   **<h4>(3) Google Pay 商户ID获取方式<h4>**
+   
+   | 环境 | 说明 |
+   | ------ | ------ |
+   | 测试环境 | 可不传，SDK会使用gatewayNo作为默认值 |
+   | 生产环境 | 必须传入Google Pay Business Console中获取的商户ID |
+
+   获取步骤：
+   1. 访问 [Google Pay Business Console](https://pay.google.com/business/console) 注册商户账号
+   2. 完成Google的集成审核流程
+   3. 获取格式为 "BCR2DN4TXXXXXXXX" 的商户ID
+
+   > **注意：** 即使使用AsiaBill网关集成模式，生产环境仍需向Google注册。商户名称应与您在Google Pay Business Console注册的名称一致。
+
+
+> **<h3>7. webhook 通知处理<h3>**
 
 在订单完成后，AsiaBill系统会触发webhook，调用商户交易时给定的callbackUrl，来通知商户交易结果状态，详情请参阅  <a href="https://asiabill.gitbook.io/api-explorer/webhook/gai-shu" target="_blank">webhook</a> 
 
@@ -149,7 +189,7 @@ public class AsiabillApplication extends Application {
  
  ```
  dependencies {
-    implementation "com.asiabill.payment:android_payment:2.1.1"//The specific version number will be determined according to your needs
+    implementation "com.asiabill.payment:android_payment:2.1.2"//The specific version number will be determined according to your needs
  }
  ```
  
@@ -232,7 +272,46 @@ public class AsiabillApplication extends Application {
 
 - payment process, return the result of redirectUrl is not empty, you will need to verified the 3 ds, will be parsed redirectUrl returned to the SDK, the SDK side jump users to 3 ds page for authentication, 3 ds verification is completed, AsiaBill will jump to merchants returnUrl address（Please refer to the <a href="https://asiabill.gitbook.io/api-explorer/webhook/zhi-fu-jie-guo-tiao-zhuan" target="_blank">Pay the jump</a> ），Merchants client-side validation after signature and analytical data, analytical result is returned to the SDK (success, failure), the SDK end users to the trading results show page jump.
 
-> **<h3>6. Webhook inform processing<h3>**
+> **<h3>6. Google Pay Integration<h3>**
+
+   **<h4>(1) Prerequisites<h4>**
+   
+   - Device must have Google Play Services installed
+   - User must be logged into a Google account with a payment card linked
+   - App must be signed with a release certificate (for production environment)
+
+   **<h4>(2) Configure Google Pay Merchant Information<h4>**
+   
+   When calling the payment API, configure the following Google Pay parameters:
+
+   ```java
+   PayInfoBean payInfoBean = new PayInfoBean.Builder()
+       // ... other parameters ...
+       // Set payment method to Google Pay (0: Google Pay, 1: Other)
+       .setTokenPayType("0")
+       // [Required for Production] Google Pay Merchant ID
+       // Obtain from: https://pay.google.com/business/console after registration and approval
+       .setGooglepayMerchId("BCR2DN4TXXXXXXXX")
+       // [Recommended] Merchant name displayed on Google Pay payment page
+       .setGooglepayMerchName("Your Brand Name")
+       .build();
+   ```
+
+   **<h4>(3) Google Pay Merchant ID<h4>**
+   
+   | Environment | Description |
+   | ------ | ------ |
+   | Test | Optional - SDK will use gatewayNo as default |
+   | Production | Required - Must use Merchant ID from Google Pay Business Console |
+
+   Steps to obtain:
+   1. Visit [Google Pay Business Console](https://pay.google.com/business/console) and register a merchant account
+   2. Complete Google's integration review process
+   3. Obtain the Merchant ID in format "BCR2DN4TXXXXXXXX"
+
+   > **Note:** Even when using AsiaBill gateway integration, you still need to register with Google for production. The merchant name should match the name registered in Google Pay Business Console.
+
+> **<h3>7. Webhook inform processing<h3>**
 
 AsiaBill, after the completion of the order system will trigger webhook, call the merchants deal given callbackUrl, to inform the merchant trading results, please refer to  <a href="https://asiabill.gitbook.io/api-explorer/webhook/gai-shu" target="_blank">webhook</a> 
 

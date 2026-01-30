@@ -22,6 +22,8 @@ allprojects {
         maven{
             url "https://raw.githubusercontent.com/Asiabill/asiabill_android/main"
         }
+        maven { url 'https://maven.aliyun.com/repository/public' }  //
+        maven { url 'https://mirrors.huaweicloud.com/repository/maven/' }
     }
 
     configurations.all {
